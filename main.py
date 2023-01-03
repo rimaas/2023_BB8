@@ -15,15 +15,17 @@ while True:
         leds.set_color("LEFT", "GREEN")
         leds.set_color("RIGHT", "GREEN")
         sound = Sound()
-        sound.speak('Boobies')
-        m = LargeMotor(OUTPUT_A)
-        m.on_for_rotations(SpeedPercent(100), 5)
+        sound.speak('Hallo Floris en Sanne, jullie zijn lief')
+
+        m1 = LargeMotor(OUTPUT_A)
+        m1.on_for_rotations(SpeedPercent(100), 5)
         m2 = LargeMotor(OUTPUT_B)
         m2.on_for_rotations(SpeedPercent(100), 5)
         m3 = Motor(OUTPUT_C)
         m3.on_for_rotations(SpeedPercent(100), 5)
         m4 = Motor(OUTPUT_D)
         m4.on_for_rotations(SpeedPercent(100), 5)
+
     else:
         leds.set_color("LEFT", "RED")
         leds.set_color("RIGHT", "RED")
