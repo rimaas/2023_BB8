@@ -19,12 +19,12 @@ while True:
 
         m1 = LargeMotor(OUTPUT_A)
         m1.on_for_rotations(SpeedPercent(100), 5)
-        # m2 = LargeMotor(OUTPUT_B)
-        # m2.on_for_rotations(SpeedPercent(100), 5)
-        # m3 = Motor(OUTPUT_C)
-        # m3.on_for_rotations(SpeedPercent(100), 5)
-        # m4 = Motor(OUTPUT_D)
-        # m4.on_for_rotations(SpeedPercent(100), 5)
+        m2 = LargeMotor(OUTPUT_B)
+        m2.on_for_rotations(SpeedPercent(100), 5)
+        m3 = Motor(OUTPUT_C)
+        m3.on_for_rotations(SpeedPercent(100), 5)
+        m4 = Motor(OUTPUT_D)
+        m4.on_for_rotations(SpeedPercent(100), 5)
 
     else:
         leds.set_color("LEFT", "RED")
