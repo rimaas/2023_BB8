@@ -1,31 +1,52 @@
 #!/usr/bin/env python3
-from ev3dev2.motor import LargeMotor, Motor, OUTPUT_A, OUTPUT_B, OUTPUT_C, OUTPUT_D, SpeedPercent, MoveTank
-from ev3dev2.sensor import INPUT_1
-from ev3dev2.sensor.lego import TouchSensor
-from ev3dev2.led import Leds
-from ev3dev2.sound import Sound
+from ev3dev2.motor import LargeMotor, Motor, OUTPUT_A, OUTPUT_B, OUTPUT_C
+from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3
+from ev3dev2.sensor.lego import UltrasonicSensor, GyroSensor
 
-ts = TouchSensor()
-leds = Leds()
+from DV.actsys import conversion, drive
+from PG.actsys import gain_balancing
 
-print("Press the touch sensor to change the LED color!")
+import numpy as np
 
-while True:
-    if ts.is_pressed:
-        leds.set_color("LEFT", "GREEN")
-        leds.set_color("RIGHT", "GREEN")
-        sound = Sound()
-        sound.speak('Hallo Floris en Sanne, jullie zijn lief')
+import time
 
-        m1 = LargeMotor(OUTPUT_A)
-        m1.on_for_rotations(SpeedPercent(100), 5)
-        m2 = LargeMotor(OUTPUT_B)
-        m2.on_for_rotations(SpeedPercent(100), 5)
-        m3 = Motor(OUTPUT_C)
-        m3.on_for_rotations(SpeedPercent(100), 5)
-        m4 = Motor(OUTPUT_D)
-        m4.on_for_rotations(SpeedPercent(100), 5)
+gyro = GyroSensor()
 
-    else:
-        leds.set_color("LEFT", "RED")
-        leds.set_color("RIGHT", "RED")
+# MotorBackLeft = LargeMotor( OUTPUT_A )
+# MotorBackRight = LargeMotor( OUTPUT_C )
+# MotorFront = Motor( OUTPUT_B )
+
+# MotorBackLeft.on_for_rotations(SpeedPercent(5), 1)
+# MotorBackRight.on_for_rotations(SpeedPercent(5), 1)
+# MotorFront.on_for_rotations(SpeedPercent(5), 1)
+
+GyroRx = GyroSensor( INPUT_2 )
+GyroRy = GyroSensor( INPUT_1 )
+UltraSensor = UltrasonicSensor( INPUT_3 )
+
+GyroRx.mode = 'GYRO-ANG'
+GyroRx.mode = 'GYRO-ANG'
+UltraSensor.mode = 'US-DIST-CM'
+
+PROPORTIONAL_GAIN = 0.3
+
+t_end = time.time() + 60 * 0.1
+
+while time.time() < t_end:
+
+    setpoint_v = [2, 0, 0]  # m/s
+
+    setpoint_rpm = conversion.mps_to_rpm(setpoint_v)
+
+    gain_balancing_matrix = gain_balancing.nominal()
+
+    setpoint_raw = np.matmul(gain_balancing_matrix,setpoint_rpm)
+
+    drive.drive_motor_front(setpoint_raw[0])
+    drive.drive_motor_back_left(setpoint_raw[1])
+    drive.drive_motor_back_right(setpoint_raw[2])
+
+drive.drive_motor_front(0)
+drive.drive_motor_back_left(0)
+drive.drive_motor_back_right(0)
+
