@@ -3,7 +3,7 @@ from ev3dev2.motor import LargeMotor, Motor, OUTPUT_A, OUTPUT_B, OUTPUT_C
 from ev3dev2.sensor import INPUT_1, INPUT_2, INPUT_3
 from ev3dev2.sensor.lego import UltrasonicSensor, GyroSensor
 
-from DV.actsys import conversion, drive
+from DV.actsys import conversion, actuator
 from PG.actsys import gain_balancing
 
 import numpy as np
@@ -42,11 +42,11 @@ while time.time() < t_end:
 
     setpoint_raw = np.matmul(gain_balancing_matrix,setpoint_rpm)
 
-    drive.drive_motor_front(setpoint_raw[0])
-    drive.drive_motor_back_left(setpoint_raw[1])
-    drive.drive_motor_back_right(setpoint_raw[2])
+    actuator.drive_motor_front(setpoint_raw[0])
+    actuator.drive_motor_back_left(setpoint_raw[1])
+    actuator.drive_motor_back_right(setpoint_raw[2])
 
-drive.drive_motor_front(0)
-drive.drive_motor_back_left(0)
-drive.drive_motor_back_right(0)
+actuator.drive_motor_front(0)
+actuator.drive_motor_back_left(0)
+actuator.drive_motor_back_right(0)
 

@@ -8,10 +8,10 @@ def drive_motor_front(setpoint_rpm):
 
     motor_front = Motor(OUTPUT_B)
 
-    if setpoint_rpm >= constants.Motor().peak:
+    if setpoint_rpm > constants.Motor().peak:
         setpoint_rpm = constants.Motor().peak
 
-    if setpoint_rpm <= -constants.Motor().peak:
+    if setpoint_rpm < -constants.Motor().peak:
         setpoint_rpm = -constants.Motor().peak
 
     motor_front.on(ev3_speed_rpm(setpoint_rpm))
