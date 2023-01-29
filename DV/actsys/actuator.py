@@ -15,6 +15,9 @@ def drive_motor_front(setpoint_rpm):
         setpoint_rpm = -constants.Motor().peak
 
     motor_front.on(ev3_speed_rpm(setpoint_rpm))
+    actual_speed = motor_front.speed
+
+    return actual_speed
 
 
 def drive_motor_back_left(setpoint_rpm):
@@ -28,6 +31,9 @@ def drive_motor_back_left(setpoint_rpm):
         setpoint_rpm = -constants.LargeMotor().peak
 
     motor_back_left.on(ev3_speed_rpm(setpoint_rpm))
+    actual_speed = motor_back_left.speed
+
+    return actual_speed
 
 
 def drive_motor_back_right(setpoint_rpm):
@@ -41,3 +47,6 @@ def drive_motor_back_right(setpoint_rpm):
         setpoint_rpm = -constants.LargeMotor().peak
 
     motor_back_right.on(ev3_speed_rpm(setpoint_rpm))
+    actual_speed = motor_back_right.speed
+
+    return actual_speed
