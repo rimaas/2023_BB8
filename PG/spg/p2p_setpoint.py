@@ -1,5 +1,4 @@
 import numpy as np
-
 import SYSxCONST as constants
 
 if constants.SystemConstants().SIM_MODE:

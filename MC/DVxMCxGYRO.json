@@ -1,1 +1,1 @@
-{"calibration_mode": "GYRO-ANG", "axis": "Rx", "static_offset": 0, "offset_calibrated": false, "gain_offset": 0}
+{"rx": {"calibration_mode": "GYRO-ANG", "gain_offset": 2, "static_offset": 1, "offset_calibrated": false}, "ry": {"calibration_mode": "GYRO-ANG", "gain_offset": 4, "static_offset": 3, "offset_calibrated": false}}

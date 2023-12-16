@@ -40,6 +40,10 @@ calibration_mode = 'GYRO-ANG'
 
 sensor.download_gyro_parameters(axis, calibration_mode)
 
+dvxconst.GyroOffsetsCalibrated.get_instance().set_values_rx(False, 'GYRO-ANG', 1, 2)
+dvxconst.GyroOffsetsCalibrated.get_instance().set_values_ry(False, 'GYRO-ANG', 3, 4)
+# sensor.write_calibrated_parameters()
+sensor.restore_default_parameters()
 
 # colorsens = ColorSensor(INPUT_4)
 # colorsens.mode = 'COL-COLOR'
@@ -94,15 +98,15 @@ for sample_id in range(time_signal.shape[0]):
 
     actual_speed = np.zeros(3)
 
-    actual_speed[0] = actuator.drive_motor_front(setpoint_raw[0])
-    actual_speed[1] = actuator.drive_motor_back_left(setpoint_raw[1])
-    actual_speed[2] = actuator.drive_motor_back_right(setpoint_raw[2])
+    # actual_speed[0] = actuator.drive_motor_front(setpoint_raw[0])
+    # actual_speed[1] = actuator.drive_motor_back_left(setpoint_raw[1])
+    # actual_speed[2] = actuator.drive_motor_back_right(setpoint_raw[2])
 
     pause.until(t_start + (sample_id * 1 / sysxconst.SystemConstants().sample_rate))
-
-    print(sensor.read_gyro_rx())
-
     time_old = time.time()
+
+    print('Rx: ' + str(sensor.read_gyro_rx()))
+    print('Ry: ' + str(sensor.read_gyro_ry()))
 
 actuator.drive_motor_front(0)
 actuator.drive_motor_back_left(0)

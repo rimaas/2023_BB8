@@ -16,36 +16,29 @@ import DV.DVxCONST as dvxconst
 
 def download_gyro_parameters(axis, mode):
 
-    # load nominal or calibrated values (.ddf) and store these in global class
-    # in the .ddf various offsets are stored for different modes
+    # load nominal or calibrated values (.json) and store these in global class
+    # in the .json various offsets are stored for different modes
     # if parameters are uncalibrated, the values defined in GyroOffsetsNominal are used
 
-    # step 1: load .ddf corresponding to input argument "mode"
-    # step 2: check if parameters are calibrated
-    # step 3: download parameters to GyroOffsetsCalibrated
-    #           if uncalibrated, use GyrOffsetsNominal
+    # todo: make saved parameters a function of the gyro mode
 
-    # todo: make a global object which includes the offsets for both Rx and Ry
+    print('Download: Gyro DV parameters')
 
-    print('Download: DV parameters')
-
-    GyroAxis = dvxconst.GyroOffsetsCalibrated(axis)
-
-    # # Convert the class to a dictionary
-    # gyroaxis_dict = GyroAxis.__dict__
-    #
-    # with open('MC/DVxMCxGYRO.json', 'w') as f:
-    #     json.dump(gyroaxis_dict, f)
-
+    # load json file
     with open('MC/DVxMCxGYRO.json', 'r') as f:
         gyroaxis_dict = json.load(f)
 
-    offset_calibrated = gyroaxis_dict.get('offset_calibrated')
-    calibration_mode = gyroaxis_dict.get('calibration_mode')
-    static_offset = gyroaxis_dict.get('static_offset')
-    gain_offset = gyroaxis_dict.get('gain_offset')
+    inner_struct_rx, inner_struct_ry = dvxconst.dict_to_struct(gyroaxis_dict)
 
-    GyroAxis.set_values(offset_calibrated, calibration_mode, static_offset, gain_offset)
+    dvxconst.GyroOffsetsCalibrated.get_instance().set_values_rx(inner_struct_rx.offset_calibrated,
+                                                                inner_struct_rx.calibration_mode,
+                                                                inner_struct_rx.gain_offset,
+                                                                inner_struct_rx.static_offset)
+
+    dvxconst.GyroOffsetsCalibrated.get_instance().set_values_ry(inner_struct_ry.offset_calibrated,
+                                                                inner_struct_ry.calibration_mode,
+                                                                inner_struct_ry.gain_offset,
+                                                                inner_struct_ry.static_offset)
 
     gyro = GyroSensor()
 
@@ -56,58 +49,52 @@ def download_gyro_parameters(axis, mode):
     else:
         print('Unknown axis selected')
 
-    gyro.mode = GyroAxis.get_values().calibration_mode
+    print('Download: Gyro DV parameters - Done!')
 
-    print('Download: DV parameters - Done!')
+    gyro.mode = dvxconst.GyroOffsetsCalibrated.get_instance().rx.calibration_mode
+    print('Rx gyro mode set to: ' + dvxconst.GyroOffsetsCalibrated.get_instance().rx.calibration_mode)
 
-def write_calibrated_parameters():
-    # function to write calibrated parameters to .ddf file
-    pass
+    gyro.mode = dvxconst.GyroOffsetsCalibrated.get_instance().ry.calibration_mode
+    print('Ry gyro mode set to: ' + dvxconst.GyroOffsetsCalibrated.get_instance().ry.calibration_mode)
+
+
+def write_parameters():
+
+    # function to write calibrated parameters to .json file
+
+    gyroaxis_dict = dvxconst.struct_to_dict(dvxconst.GyroOffsetsCalibrated.get_instance())
+
+    with open('MC/DVxMCxGYRO.json', 'w') as f:
+        json.dump(gyroaxis_dict, f)             
 
 
 def restore_default_parameters():
-    # function to restore parameters in .ddf file
-    pass
+
+    # function to restore default parameters in .json file
+
+    dvxconst.GyroOffsetsCalibrated.get_instance().set_values_rx(False, 'GYRO-ANG', 0, 0)
+    dvxconst.GyroOffsetsCalibrated.get_instance().set_values_ry(False, 'GYRO-ANG', 0, 0)
+
+    write_parameters()
 
 
 def read_gyro_rx():
 
     gyro_rx = GyroSensor(INPUT_2)
 
-    Rx = dvxconst.GyroOffsetsCalibrated('Rx')
+    values = dvxconst.GyroOffsetsCalibrated.get_instance().rx
 
-    sample_output = gyro_rx.value() * Rx.get_values().gain_offset + Rx.get_values().static_offset
+    sample_output = gyro_rx.value() * values.gain_offset + values.static_offset
 
-    # sample_rate = constants.SystemConstants().sample_rate
-    #
-    # gyro_rx = GyroSensor(INPUT_2)
-    #
-    # sample_output = np.zeros(duration*sample_rate+1)
-    # sample_time = np.zeros(duration*sample_rate+1)
-    #
-    # print('Start sensor trace...')
-    #
-    # t_start = time.time()
-    # sample = 0
-    #
-    # while time.time() < (t_start + duration):
-    #     sample_time[sample] = time.time() - t_start
-    #     sample_output[sample] = gyro_rx.value()
-    #
-    #     pause.until(t_start + (sample * 1/sample_rate))
-    #     sample = sample + 1
-    #
-    # print('Finished tracing')
-
-    return sample_output #, sample_time
+    return sample_output
 
 
 def read_gyro_ry():
 
     gyro_ry = GyroSensor(INPUT_1)
 
-    params = dvxconst.GyroOffsetsRy().get_values()
+    values = dvxconst.GyroOffsetsCalibrated.get_instance().ry
 
-    sample_output = gyro_ry.value() * params.gain_offset + params.static_offset
+    sample_output = gyro_ry.value() * values.gain_offset + values.static_offset
 
     return sample_output
